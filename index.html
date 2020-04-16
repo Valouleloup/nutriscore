@@ -58,11 +58,11 @@
 	cell = row.insertCell();
 	cell.innerHTML = "Mat grasses";
 	cell = row.insertCell();
-	cell.innerHTML = "Acides gras saturés";
+	cell.innerHTML = "Ac. gras saturés";
 	cell = row.insertCell();
 	cell.innerHTML = "Protéines";
 	cell = row.insertCell();
-	cell.innerHTML = "Fibres alimentaires";
+	cell.innerHTML = "Fibres alim.";
 	cell = row.insertCell();
 	cell.innerHTML = "Sel";
 	
@@ -186,7 +186,7 @@
 		// Glucides
 		var glucides = scores[key].nutriments.carbohydrates_100g;
 		cell = row.insertCell();
-		cell.innerHTML = glucides;
+		cell.innerHTML = Math.round(glucides*10)/10;
 		if (glucides > 50) {
 			cell.style.backgroundColor = "#E63E11";
 		} else if (glucides > 20) {
@@ -200,7 +200,7 @@
 		// Sucres
 		var sucres = scores[key].nutriments.sugars_100g;
 		cell = row.insertCell();
-		cell.innerHTML = sucres;
+		cell.innerHTML = Math.round(sucres*10)/10;
 		if (sucres > 25) {
 			cell.style.backgroundColor = "#E63E11";
 		} else if (sucres > 8) {
