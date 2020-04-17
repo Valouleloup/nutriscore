@@ -22,52 +22,58 @@
 		tr:hover{
 			background-color:#ccc;
 		}
+		span.round {
+			padding: 2px 5px;
+			border-radius: 10px;
+			width: 45px;
+			display: inline-block;
+		}
+		span.underline {
+			box-sizing: border-box;
+			border-bottom: 6px solid red;
+			padding: 0px 5px -5px 5px;
+			width: 30px;
+			display: inline-block;
+		}
   </style>
 </head>
 <body>
   <div id="content">
   </div>
   
-  <script src="db.js"></script>
+  <script src="data.js"></script>
   <script>
 	
 	var divContent = document.getElementById("content");
 	var table = document.createElement("table");
-	
+		
 	// Header
 	var header = table.createTHead();
 	var row = header.insertRow(0);
-	var cell = row.insertCell();
-	cell.innerHTML = "Type";
-	cell = row.insertCell();
-	cell.innerHTML = "Nom";
-	cell = row.insertCell();
-	cell.innerHTML = "Nutriscore";
-	cell = row.insertCell();
-	cell.innerHTML = "Nova";
-	cell = row.insertCell();
-	cell.innerHTML = "Labels";
-	cell = row.insertCell();
-	cell.innerHTML = "Origine";
-	cell = row.insertCell();
-	cell.innerHTML = "Energie (kcal)";
-	cell = row.insertCell();
-	cell.innerHTML = "Glucides";
-	cell = row.insertCell();
-	cell.innerHTML = "Sucres";
-	cell = row.insertCell();
-	cell.innerHTML = "Mat grasses";
-	cell = row.insertCell();
-	cell.innerHTML = "Ac. gras saturés";
-	cell = row.insertCell();
-	cell.innerHTML = "Protéines";
-	cell = row.insertCell();
-	cell.innerHTML = "Fibres alim.";
-	cell = row.insertCell();
-	cell.innerHTML = "Sel";
+	
+	var headerLabels = ["Type","Nom","Nutriscore","Nova","Labels","Origine","Energie (kcal)","Glucides","Sucres","Mat grasses","Ac. gr. saturés","Protéines","Fibres alim.","Sel"];
+
+	for (var key in headerLabels) {
+		var cell = row.insertCell();
+		cell.innerHTML = headerLabels[key];
+	}
 	
 	// Body
 	var tbody = table.createTBody();
+	var typeColorMapping = {
+		"yaourt": "gray",
+		"fromage": "lemonchiffon",
+		"plat cuisiné": "deeppink",
+		"biscuits": "darkorange",
+		"féculent": "gold",
+		"légumes": "green",
+		"viande": "crimson",
+		"poisson": "darkturquoise",
+		"boisson": "red",
+		"pain": "#FFD185",
+		"apéro": "peru",
+		"dessert": "lightblue",
+	}
 	
 	for (var key in scores) {
 		row = tbody.insertRow(key);
@@ -75,31 +81,7 @@
 		// Type
 		var type = scores[key].type;
 		cell = row.insertCell();
-		if (type == "yaourt") {
-			cell.style.backgroundColor = "gray";		
-		} else if (type == "fromage") {
-			cell.style.backgroundColor = "lemonchiffon";
-		} else if (type == "plat cuisiné") {
-			cell.style.backgroundColor = "deeppink";
-		} else if (type == "biscuits") {
-			cell.style.backgroundColor = "darkorange";
-		} else if (type == "féculent") {
-			cell.style.backgroundColor = "gold";
-		} else if (type == "légumes") {
-			cell.style.backgroundColor = "green";
-		} else if (type == "viande") {
-			cell.style.backgroundColor = "crimson";
-		} else if (type == "poisson") {
-			cell.style.backgroundColor = "darkturquoise";
-		} else if (type == "boisson") {
-			cell.style.backgroundColor = "red";
-		} else if (type == "pain") {
-			cell.style.backgroundColor = "#FFD185";
-		} else if (type == "apéro") {
-			cell.style.backgroundColor = "peru";
-		} else if (type == "dessert") {
-			cell.style.backgroundColor = "lightblue";
-		} 
+		cell.style.backgroundColor = typeColorMapping[type]; 
 		cell.style.maxWidth = "20px";
 		cell.title = type;
 		
@@ -155,7 +137,7 @@
 		cell = row.insertCell();
 		//cell.innerHTML = JSON.stringify(labels);
 		if (labels != undefined && (labels.includes('en:fr-bio-01') || labels.includes('en:fr-bio-10'))) {
-			cell.style.backgroundColor = "#00AA00";
+			cell.style.backgroundColor = "#49d14b";
 			cell.style.textAlign = "center";
 			cell.innerHTML = "Bio";
 		}
@@ -164,16 +146,21 @@
 		var origine = scores[key].origins;
 		cell = row.insertCell();
 		if (origine != undefined && origine.indexOf('France') != -1) {
-			cell.style.backgroundColor = "#00AA00";
+			cell.style.backgroundColor = "#49d14b";
 			cell.innerHTML = origine;
 			cell.style.maxWidth = "100px";
 			cell.style.overflow = "hidden";
 		} else if (origine != undefined && origine.indexOf('France') == -1) {
-			cell.style.backgroundColor = "#FF0000";
+			cell.style.backgroundColor = "#ff684a";
 			cell.innerHTML = origine;
 			cell.style.maxWidth = "100px";
 			cell.style.overflow = "hidden";
 		}
+		
+		var redColor = "#ff5b3b";
+		var orangeColor = "#fca546";
+		var yellowColor = "#FEC107";
+		var greenColor = "#49d14b";
 		
 		// Energie
 		var energie = scores[key].nutriments["energy-kcal_value"];
@@ -181,62 +168,89 @@
 			energie = Math.round(scores[key].nutriments["energy-kj_100g"] / 4.184);
 		}
 		cell = row.insertCell();
+		cell.style.textAlign = "center";
 		cell.innerHTML = energie;
+		if (energie > 400) {
+			cell.style.backgroundColor = redColor;
+		} else if (energie > 200) {
+			cell.style.backgroundColor = orangeColor;
+		} else if (energie > 100) {
+			cell.style.backgroundColor = yellowColor;
+		} else {
+			cell.style.backgroundColor = greenColor;
+		}
 		
 		// Glucides
 		var glucides = scores[key].nutriments.carbohydrates_100g;
 		cell = row.insertCell();
-		cell.innerHTML = Math.round(glucides*10)/10;
+		cell.style.textAlign = "center";
+		var span = document.createElement('span');
+		span.innerHTML = Math.round(glucides*10)/10;
+		span.classList.add('round');
+		cell.appendChild(span);
 		if (glucides > 50) {
-			cell.style.backgroundColor = "#E63E11";
+			span.style.backgroundColor = redColor;
 		} else if (glucides > 20) {
-			cell.style.backgroundColor = "#FF6600";
+			span.style.backgroundColor = orangeColor;
 		} else if (glucides > 5) {
-			cell.style.backgroundColor = "#FFCC01";
+			span.style.backgroundColor = yellowColor;
 		} else {
-			cell.style.backgroundColor = "#60F000";
+			span.style.backgroundColor = greenColor;
 		}
 		
 		// Sucres
 		var sucres = scores[key].nutriments.sugars_100g;
 		cell = row.insertCell();
-		cell.innerHTML = Math.round(sucres*10)/10;
+		cell.style.textAlign = "center";
+		cell.style.minWidth = "60px";
+		var span = document.createElement('span');
+		span.innerHTML = Math.round(sucres*10)/10;
+		span.classList.add('round');
+		cell.appendChild(span);
 		if (sucres > 25) {
-			cell.style.backgroundColor = "#E63E11";
+			span.style.backgroundColor = redColor;
 		} else if (sucres > 8) {
-			cell.style.backgroundColor = "#FF6600";
+			span.style.backgroundColor = orangeColor;
 		} else if (sucres > 4.2) {
-			cell.style.backgroundColor = "#FFCC01";
+			span.style.backgroundColor = yellowColor;
 		} else {
-			cell.style.backgroundColor = "#60F000";
+			span.style.backgroundColor = greenColor;
 		}
 		
 		// Gras
 		var gras = scores[key].nutriments.fat_100g;
 		cell = row.insertCell();
-		cell.innerHTML = Math.round(gras*10)/10;
+		cell.style.textAlign = "center";
+		var span = document.createElement('span');
+		span.innerHTML = Math.round(gras*10)/10;
+		span.classList.add('round');
+		cell.appendChild(span);
 		if (gras > 30) {
-			cell.style.backgroundColor = "#E63E11";
+			span.style.backgroundColor = redColor;
 		} else if (gras > 20) {
-			cell.style.backgroundColor = "#FF6600";
+			span.style.backgroundColor = orangeColor;
 		} else if (gras > 3) {
-			cell.style.backgroundColor = "#FFCC01";
+			span.style.backgroundColor = yellowColor;
 		} else {
-			cell.style.backgroundColor = "#60F000";
+			span.style.backgroundColor = greenColor;
 		}
 		
 		// Graisses saturees
 		var grasSatures = scores[key].nutriments['saturated-fat_100g'];
 		cell = row.insertCell();
-		cell.innerHTML = Math.round(grasSatures*10)/10;
+		cell.style.textAlign = "center";
+		var span = document.createElement('span');
+		span.innerHTML = Math.round(grasSatures*10)/10;
+		span.classList.add('round');
+		cell.appendChild(span);
 		if (grasSatures > 12) {
-			cell.style.backgroundColor = "#E63E11";
+			span.style.backgroundColor = redColor;
 		} else if (grasSatures > 5) {
-			cell.style.backgroundColor = "#FF6600";
+			span.style.backgroundColor = orangeColor;
 		} else if (grasSatures > 1) {
-			cell.style.backgroundColor = "#FFCC01";
+			span.style.backgroundColor = yellowColor;
 		} else {
-			cell.style.backgroundColor = "#60F000";
+			span.style.backgroundColor = greenColor;
 		}
 		
 		// Proteines
@@ -255,13 +269,17 @@
 		// Sel
 		var sel = scores[key].nutriments.salt_100g;
 		cell = row.insertCell();
-		cell.innerHTML = sel;
+		cell.style.textAlign = "center";
+		var span = document.createElement('span');
+		span.innerHTML = Math.round(sel*10)/10;
+		span.classList.add('round');
+		cell.appendChild(span);
 		if (sel > 1.5) {
-			cell.style.backgroundColor = "#E63E11";
+			span.style.backgroundColor = redColor;
 		} else if (sel > 0.3) {
-			cell.style.backgroundColor = "#FFCC01";
+			span.style.backgroundColor = yellowColor;
 		} else {
-			cell.style.backgroundColor = "#60F000";
+			span.style.backgroundColor = greenColor;
 		}
 	}
 	
